@@ -40,21 +40,31 @@ class ModelController {
 
         try {
             let {name, license, description, tags, price, likes, size, status, licenseId, categoryId} = req.body
-            const {link_photo} = req.files
+            const {link_photo} = req.body
             let fileName = uuid.v4() + ".jpg"
             // link_photo.mv(path.resolve(__dirname, '..', 'static/photoModel', fileName))
             //
-            // const {link_download} = req.files
+            const {link_download} = req.files
             // let fileNameR = uuid.v4() + ".rar"
             // link_download.mv(path.resolve(__dirname, '..', 'static/rar', fileNameR))
             //
-            // const {model3d} = req.files
+            const {model3d} = req.files
             // let fileNameModel = uuid.v4() + ".glb"
             // model3d.mv(path.resolve(__dirname, '..', 'static/3dModel', fileNameModel))
 
-            cloudinary.uploader.upload(link_photo).then(result => {
-                console.log(result)
+            const reader = new FileReader();
+
+            cloudinary.uploader.upload(link_photo).then({
+                folder: rar,
+                width: 300,
+                crop: "scale"
             })
+            // cloudinary.uploader.upload(link_download).then(result => {
+            //     console.log(result)
+            // })
+            // cloudinary.uploader.upload(model3d).then(result => {
+            //     console.log(result)
+            // })
 
 
             let tagsArray = []
@@ -64,7 +74,7 @@ class ModelController {
                 tagsArray.push(tags)
             }
 
-            const model = await Model.create({name, license, description, tags:tagsArray, price, likes, size, userId: req.user.id, categoryId, licenseId, status, link_photo: fileName, link_download: fileNameR, model3d:fileNameModel})
+            const model = await Model.create({name, license, description, tags:tagsArray, price, likes, size, userId: req.user.id, categoryId, licenseId, status, link_photo: fileName})
             return res.json(model)
         }catch (e) {
             next(ApiError.badRequest(e.message))
