@@ -4,6 +4,7 @@ const path = require('path')
 const {Model, Basket_items, User, License} = require("../models/models")
 const ApiError = require('../error/ApiError')
 const { Op, DataTypes} = require("sequelize");
+const cloudinary = require("../cloud")
 
 class ModelController {
     async getModels(req, res) {
@@ -41,15 +42,20 @@ class ModelController {
             let {name, license, description, tags, price, likes, size, status, licenseId, categoryId} = req.body
             const {link_photo} = req.files
             let fileName = uuid.v4() + ".jpg"
-            link_photo.mv(path.resolve(__dirname, '..', 'static/photoModel', fileName))
+            // link_photo.mv(path.resolve(__dirname, '..', 'static/photoModel', fileName))
+            //
+            // const {link_download} = req.files
+            // let fileNameR = uuid.v4() + ".rar"
+            // link_download.mv(path.resolve(__dirname, '..', 'static/rar', fileNameR))
+            //
+            // const {model3d} = req.files
+            // let fileNameModel = uuid.v4() + ".glb"
+            // model3d.mv(path.resolve(__dirname, '..', 'static/3dModel', fileNameModel))
 
-            const {link_download} = req.files
-            let fileNameR = uuid.v4() + ".rar"
-            link_download.mv(path.resolve(__dirname, '..', 'static/rar', fileNameR))
+            cloudinary.uploader.upload(link_photo).then(result => {
+                console.log(result)
+            })
 
-            const {model3d} = req.files
-            let fileNameModel = uuid.v4() + ".glb"
-            model3d.mv(path.resolve(__dirname, '..', 'static/3dModel', fileNameModel))
 
             let tagsArray = []
             if (Array.isArray(tags)) {
