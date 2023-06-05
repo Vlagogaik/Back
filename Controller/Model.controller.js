@@ -52,7 +52,7 @@ class ModelController {
             // let fileNameModel = uuid.v4() + ".glb"
             // model3d.mv(path.resolve(__dirname, '..', 'static/3dModel', fileNameModel))
 
-            const reader = new FileReader();
+            // const reader = new FileReader();
 
             cloudinary.uploader.upload(link_photo).then({
                 folder: rar,
@@ -65,6 +65,9 @@ class ModelController {
             // cloudinary.uploader.upload(model3d).then(result => {
             //     console.log(result)
             // })
+            const phot = await cloudinary.uploader.upload((link_photo), {
+                folder: rar
+            })
 
 
             let tagsArray = []
@@ -74,7 +77,20 @@ class ModelController {
                 tagsArray.push(tags)
             }
 
-            const model = await Model.create({name, license, description, tags:tagsArray, price, likes, size, userId: req.user.id, categoryId, licenseId, status, link_photo: fileName})
+            const model = await Model.create(
+                {name,
+                    license,
+                    description,
+                    tags:tagsArray,
+                    price,
+                    likes,
+                    size,
+                    userId: req.user.id,
+                    categoryId,
+                    licenseId,
+                    status,
+                    link_photo: {public_id: phot.public_id, url: phot.secure_url}
+                })
             return res.json(model)
         }catch (e) {
             next(ApiError.badRequest(e.message))
